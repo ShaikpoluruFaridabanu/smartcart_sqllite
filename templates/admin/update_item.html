@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Update Product | SmartCart{% endblock %}
+{% block content %}
+<div class="form-card">
+  <div class="form-intro"><p class="eyebrow">Catalogue management</p><h1>Update Product</h1><p>Make changes to your product information below.</p></div>
+  <form method="POST" action="/admin/update-item/{{ product.product_id }}" enctype="multipart/form-data">
+    <div class="form-group"><label>Product Name</label><input type="text" name="name" value="{{ product.name }}" required></div>
+    <div class="form-group"><label>Description</label><textarea name="description" required>{{ product.description }}</textarea></div>
+    <div class="form-group"><label>Category</label><input type="text" name="category" value="{{ product.category }}" required></div>
+    <div class="form-group"><label>Price (₹)</label><input type="number" step="0.01" min="0" name="price" value="{{ product.price }}" required></div>
+    <div class="form-group"><label>Current Image</label><br><img class="detail-image" style="max-width:190px;max-height:180px" src="{{ url_for('static', filename='uploads/product_images/' ~ product.image) }}" alt="{{ product.name }}"></div>
+    <div class="form-group"><label>Choose New Image (Optional)</label><input type="file" name="image" accept="image/*"></div>
+    <div class="hero-actions"><button type="submit">Update Product</button><a class="button secondary" href="/admin/item-list">Cancel</a></div>
+  </form>
+</div>
+{% endblock %}

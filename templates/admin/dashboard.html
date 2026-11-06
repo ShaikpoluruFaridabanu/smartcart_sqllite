@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard | SmartCart{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">Admin workspace</p><h1>Welcome back, {{ admin_name }}!</h1><p>Manage your store and keep your product catalogue up to date.</p></div><a class="button" href="/admin/add-item">＋ Add Product</a></div>
+<div class="stats-grid">
+  <div class="stat-card"><div class="feature-icon">▦</div><strong>Products</strong><span>Manage your product catalogue</span></div>
+  <div class="stat-card"><div class="feature-icon">＋</div><strong>Add new</strong><span>List another product in your store</span></div>
+  <div class="stat-card"><div class="feature-icon">♙</div><strong>My profile</strong><span>Update your account information</span></div>
+</div>
+<div class="section-heading"><div><p class="eyebrow">Quick actions</p><h2>What would you like to do?</h2></div></div>
+<div class="feature-grid">
+  <a class="feature-card" href="/admin/item-list"><div class="feature-icon">▤</div><h3>View my products →</h3><p>Browse, search, update or delete the products you added.</p></a>
+  <a class="feature-card" href="/admin/add-item"><div class="feature-icon">＋</div><h3>Add a product →</h3><p>Add a new item with its description, category, price and image.</p></a>
+  <a class="feature-card" href="/admin/profile"><div class="feature-icon">♙</div><h3>Admin profile →</h3><p>Manage your name, email, password and profile photo.</p></a>
+</div>
+{% endblock %}

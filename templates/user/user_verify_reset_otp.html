@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify OTP | SmartCart{% endblock %}
+
+{% block content %}
+
+<div class="auth-wrap">
+    <section class="auth-card">
+
+        <div class="feature-icon">🔐</div>
+
+        <p class="eyebrow">Account Verification</p>
+
+        <h2>Verify OTP</h2>
+
+        <p class="muted">
+            Enter the 6-digit OTP sent to your registered email.
+            Your OTP is valid for 5 minutes.
+        </p>
+
+        <form method="POST" action="{{ url_for('user_verify_reset_otp') }}">
+
+            <div class="form-group">
+                <label>Enter OTP</label>
+
+                <input
+                    type="text"
+                    name="otp"
+                    placeholder="Enter 6-digit OTP"
+                    maxlength="6"
+                    pattern="[0-9]{6}"
+                    inputmode="numeric"
+                    required
+                >
+            </div>
+
+            <button type="submit" style="width:100%;">
+                Verify OTP
+            </button>
+
+        </form>
+
+        <div class="auth-links">
+            <a href="{{ url_for('user_forgot_password') }}">
+                Request New OTP
+            </a>
+
+            <a href="{{ url_for('user_login') }}">
+                Back to Login
+            </a>
+        </div>
+
+    </section>
+</div>
+
+{% endblock %}

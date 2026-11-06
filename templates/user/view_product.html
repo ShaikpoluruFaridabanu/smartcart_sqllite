@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} | SmartCart{% endblock %}
+
+{% block content %}
+
+<section class="product-details-page">
+
+    <a href="{{ url_for('user_dashboard') }}" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back to Shopping
+    </a>
+
+    <div class="product-details-card">
+
+        <!-- PRODUCT IMAGE -->
+        <div class="product-details-image">
+
+            {% if product.image %}
+
+                {% if product.image.startswith('http://') or product.image.startswith('https://') %}
+
+                    <img
+                        class="product-detail-img"
+                        src="{{ product.image }}"
+                        alt="{{ product.name }}"
+                        onerror="showProductImageFallback(this)"
+                    >
+
+                {% else %}
+
+                    <img
+                        class="product-detail-img"
+                        src="{{ url_for('static', filename='uploads/product_images/' ~ product.image.split('/')[-1]) }}"
+                        alt="{{ product.name }}"
+                        onerror="showProductImageFallback(this)"
+                    >
+
+                {% endif %}
+
+                <div class="no-product-image" hidden>
+                    <i class="fa-regular fa-image"></i>
+                    <p>Image Not Found</p>
+                </div>
+
+            {% else %}
+
+                <div class="no-product-image">
+                    <i class="fa-regular fa-image"></i>
+                    <p>No Image Available</p>
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- PRODUCT INFORMATION -->
+        <div class="product-details-info">
+
+            <span class="product-category">
+                {{ product.category or 'General' }}
+            </span>
+
+            <p class="eyebrow" style="margin-top:20px;">
+                SMARTCART PRODUCT COLLECTION
+            </p>
+
+            <h1>{{ product.name }}</h1>
+
+            <div class="details-price">
+                ₹{{ "%.2f"|format(product.price or 0) }}
+            </div>
+
+            <p>
+                {{ product.description or 'No description available for this product.' }}
+            </p>
+
+            <div class="details-divider"></div>
+
+            <h3>Product Description</h3>
+
+            <p>
+                {{ product.description or 'No description available.' }}
+            </p>
+
+            <div class="details-divider"></div>
+
+            <!-- PRODUCT INFORMATION -->
+            <div class="product-information">
+
+                <h3>Product Information</h3>
+
+                <p>
+                    <strong>Product ID:</strong>
+                    {{ product.product_id }}
+                </p>
+
+                <p>
+                    <strong>Product Name:</strong>
+                    {{ product.name }}
+                </p>
+
+                <p>
+                    <strong>Category:</strong>
+                    {{ product.category or 'General' }}
+                </p>
+
+                <p>
+                    <strong>Price:</strong>
+                    ₹{{ "%.2f"|format(product.price or 0) }}
+                </p>
+
+            </div>
+
+
+            <!-- PURCHASE BUTTONS -->
+            <div class="product-purchase-actions">
+
+                <button
+                    type="button"
+                    class="details-cart-btn"
+                    id="addProductButton"
+                    onclick="addProductToCart(false)"
+                >
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    Add to Cart
+                </button>
+
+                <button
+                    type="button"
+                    class="details-buy-btn"
+                    id="buyNowButton"
+                    onclick="addProductToCart(true)"
+                >
+                    <i class="fa-solid fa-bolt"></i>
+                    Buy Now
+                </button>
+
+            </div>
+
+            <p style="font-size:12px;margin-top:15px;">
+                <i class="fa-solid fa-shield-halved" style="color:#6366f1;"></i>
+                Enjoy shopping with SmartCart.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+
+// PRODUCT IMAGE FALLBACK
+function showProductImageFallback(image) {
+
+    image.hidden = true;
+
+    const fallback = image.parentElement.querySelector('.no-product-image');
+
+    if (fallback) {
+        fallback.hidden = false;
+    }
+
+}
+
+
+// ADD TO CART AND BUY NOW
+async function addProductToCart(buyNow = false) {
+
+    const button = document.getElementById(
+        buyNow ? "buyNowButton" : "addProductButton"
+    );
+
+    const otherButton = document.getElementById(
+        buyNow ? "addProductButton" : "buyNowButton"
+    );
+
+    const originalContent = button.innerHTML;
+
+    try {
+
+        button.disabled = true;
+        otherButton.disabled = true;
+
+        button.innerHTML = buyNow
+            ? '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'
+            : '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
+
+        const response = await fetch(
+            "{{ url_for('add_to_cart_ajax', product_id=product.product_id) }}",
+            {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+
+            if (response.status === 401) {
+                window.location.href = "/user-login";
+                return;
+            }
+
+            alert(data.message || "Unable to add product!");
+            return;
+
+        }
+
+        // UPDATE NAVBAR CART COUNT
+        const cartCount = document.getElementById("cart-count");
+
+        if (cartCount) {
+            cartCount.textContent = data.cart_count;
+        }
+
+        // BUY NOW
+        if (buyNow) {
+            window.location.href = "{{ url_for('view_cart') }}";
+            return;
+        }
+
+        // ADD TO CART SUCCESS
+        button.innerHTML =
+            '<i class="fa-solid fa-check"></i> Added to Cart';
+
+        setTimeout(() => {
+            button.innerHTML = originalContent;
+        }, 1500);
+
+    } catch (error) {
+
+        console.error("Cart Error:", error);
+
+    } finally {
+
+        button.disabled = false;
+        otherButton.disabled = false;
+
+    }
+
+}
+
+</script>
+
+{% endblock %}

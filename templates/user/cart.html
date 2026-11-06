@@ -1,0 +1,434 @@
+{% extends 'base.html' %}
+
+{% block title %}My Cart | SmartCart{% endblock %}
+
+{% block content %}
+
+<section class="cart-page">
+
+    <div class="section-heading" style="margin-top:10px;">
+        <div>
+            <p class="eyebrow">YOUR SHOPPING BAG</p>
+            <h1>My Shopping Cart</h1>
+            <p>Select the products you want to purchase.</p>
+        </div>
+
+        <a href="{{ url_for('user_dashboard') }}" class="button secondary">
+            <i class="fa-solid fa-arrow-left"></i>
+            Continue Shopping
+        </a>
+    </div>
+
+    {% if cart %}
+
+    <div class="cart-layout" id="cart-layout">
+
+        <div class="cart-items">
+
+            <!-- SELECT ALL -->
+            <div class="cart-select-all">
+                <label>
+                    <input type="checkbox" id="select-all">
+                    <strong>Select All Products</strong>
+                </label>
+            </div>
+
+            {% for pid, item in cart.items() %}
+
+            <article class="cart-item" id="cart-item-{{ pid }}">
+
+                <!-- PRODUCT IMAGE -->
+                {% if item.image %}
+
+                    {% if item.image.startswith('http://') or item.image.startswith('https://') %}
+                        <img class="cart-item-image"
+                             src="{{ item.image }}"
+                             alt="{{ item.name }}">
+                    {% else %}
+                        <img class="cart-item-image"
+                             src="{{ url_for('static', filename='uploads/product_images/' ~ item.image.split('/')[-1]) }}"
+                             alt="{{ item.name }}"
+                             onerror="this.src='https://placehold.co/200x200/f0efff/6366f1?text=SmartCart';">
+                    {% endif %}
+
+                {% else %}
+                    <img class="cart-item-image"
+                         src="https://placehold.co/200x200/f0efff/6366f1?text=SmartCart"
+                         alt="Product image unavailable">
+                {% endif %}
+
+                <!-- PRODUCT DETAILS -->
+                <div class="cart-item-info">
+
+                    <h3>{{ item.name }}</h3>
+
+                    <p class="muted">Product ID: {{ pid }}</p>
+
+                    <div class="cart-item-price">
+                        ₹{{ "%.2f"|format(item.price|float) }}
+                    </div>
+
+                    <!-- QUANTITY CONTROLS -->
+                    <div class="quantity-control">
+
+                        <button type="button"
+                                class="quantity-btn"
+                                onclick="updateCart('{{ pid }}', 'decrease', this)">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+
+                        <span class="quantity-value" id="quantity-{{ pid }}">
+                            {{ item.quantity }}
+                        </span>
+
+                        <button type="button"
+                                class="quantity-btn"
+                                onclick="updateCart('{{ pid }}', 'increase', this)">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <!-- SUBTOTAL AND REMOVE -->
+                <div class="cart-item-actions">
+
+                    <h3 id="item-total-{{ pid }}">
+                        ₹{{ "%.2f"|format(item.price|float * item.quantity|int) }}
+                    </h3>
+
+                    <button type="button"
+                            class="remove-btn"
+                            onclick="updateCart('{{ pid }}', 'remove', this)">
+                        <i class="fa-solid fa-trash"></i>
+                        Remove
+                    </button>
+
+                </div>
+
+                <!-- SELECTION CHECKBOX -->
+                <label class="cart-product-select">
+                    <input
+                        type="checkbox"
+                        class="product-checkbox"
+                        value="{{ pid }}"
+                        data-price="{{ item.price }}"
+                        data-quantity="{{ item.quantity }}"
+                    >
+                    <span>Select</span>
+                </label>
+
+            </article>
+
+            {% endfor %}
+
+        </div>
+
+        <!-- ORDER SUMMARY -->
+        <aside class="cart-summary">
+
+            <h2>Order Summary</h2>
+            <p class="muted">Your shopping summary</p>
+
+            <div class="summary-row">
+                <span>Products in Cart</span>
+                <strong id="products-count">{{ cart|length }}</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Total Items</span>
+                <strong id="total-items">{{ cart_count }}</strong>
+            </div>
+
+            <div class="details-divider"></div>
+
+            <h3 style="margin-bottom:15px;">Selected Items</h3>
+
+            <div class="summary-row">
+                <span>Selected Products</span>
+                <strong id="selected-count">0</strong>
+            </div>
+
+            <div class="summary-row summary-total">
+                <span>Selected Total</span>
+                <span id="selected-total">₹0.00</span>
+            </div>
+
+            <p id="selection-message" class="selection-message">
+                Select products to continue.
+            </p>
+
+            <button
+                type="button"
+                id="buy-selected-button"
+                class="button btn-full"
+                disabled
+                onclick="submitSelectedItems()"
+            >
+                <i class="fa-solid fa-bag-shopping"></i>
+                Proceed & continue
+            </button>
+
+            <a href="{{ url_for('user_dashboard') }}"
+               class="button secondary btn-full"
+               style="margin-top:12px;">
+                Continue Shopping
+            </a>
+
+            <p style="font-size:12px;text-align:center;margin-top:18px;">
+                <i class="fa-solid fa-shield-halved" style="color:#6366f1;"></i>
+                Secure shopping experience
+            </p>
+
+        </aside>
+
+    </div>
+
+    {% endif %}
+
+    <!-- EMPTY CART -->
+    <div class="cart-empty"
+         id="empty-cart"
+         {% if cart %}style="display:none;"{% endif %}>
+
+        <div class="cart-empty-icon">
+            <i class="fa-solid fa-bag-shopping" style="color:#6366f1;"></i>
+        </div>
+
+        <h2>Your Cart Is Empty</h2>
+
+        <p>
+            Looks like you haven't added anything to your cart yet.
+            Explore our collection and find something you love.
+        </p>
+
+        <a href="{{ url_for('user_dashboard') }}"
+           class="button"
+           style="margin-top:15px;">
+            Start Shopping
+            <i class="fa-solid fa-arrow-right"></i>
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+
+// ======================================
+// UPDATE QUANTITY / REMOVE CART PRODUCT
+// ======================================
+
+async function updateCart(pid, action, button) {
+
+    const urls = {
+        increase: `/user/cart/increase/${pid}`,
+        decrease: `/user/cart/decrease/${pid}`,
+        remove: `/user/cart/remove/${pid}`
+    };
+
+    try {
+
+        button.disabled = true;
+
+        const response = await fetch(urls[action], {
+            method: "POST",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+
+            if (response.status === 401) {
+                window.location.href = "/user-login";
+                return;
+            }
+
+            console.error(data.message || "Unable to update cart.");
+            return;
+        }
+
+        if (data.removed || action === "remove") {
+
+            document.getElementById(`cart-item-${pid}`)?.remove();
+
+        } else {
+
+            document.getElementById(`quantity-${pid}`).textContent =
+                data.quantity;
+
+            document.getElementById(`item-total-${pid}`).textContent =
+                "₹" + Number(data.item_total).toFixed(2);
+
+            const checkbox = document.querySelector(
+                `.product-checkbox[value="${pid}"]`
+            );
+
+            if (checkbox) {
+                checkbox.dataset.quantity = data.quantity;
+            }
+        }
+
+        document.getElementById("total-items").textContent =
+            data.cart_count;
+
+        document.getElementById("products-count").textContent =
+            document.querySelectorAll(".cart-item").length;
+
+        const navbarCount = document.getElementById("cart-count");
+
+        if (navbarCount) {
+            navbarCount.textContent = data.cart_count;
+        }
+
+        if (data.cart_count === 0) {
+
+            document.getElementById("cart-layout").style.display = "none";
+            document.getElementById("empty-cart").style.display = "block";
+
+        }
+
+        updateSelectedTotal();
+
+    } catch (error) {
+
+        console.error("Cart update error:", error);
+
+    } finally {
+
+        if (button.isConnected) {
+            button.disabled = false;
+        }
+
+    }
+
+}
+
+
+// ======================================
+// CALCULATE SELECTED PRODUCTS TOTAL
+// ======================================
+
+function updateSelectedTotal() {
+
+    const checkboxes = document.querySelectorAll(".product-checkbox");
+    const selectedCheckboxes = document.querySelectorAll(
+        ".product-checkbox:checked"
+    );
+
+    let selectedTotal = 0;
+
+    selectedCheckboxes.forEach(checkbox => {
+
+        const price = Number(checkbox.dataset.price);
+        const quantity = Number(checkbox.dataset.quantity);
+
+        selectedTotal += price * quantity;
+
+    });
+
+    document.getElementById("selected-count").textContent =
+        selectedCheckboxes.length;
+
+    document.getElementById("selected-total").textContent =
+        "₹" + selectedTotal.toFixed(2);
+
+    const buyButton = document.getElementById("buy-selected-button");
+
+    buyButton.disabled = selectedCheckboxes.length === 0;
+
+    document.getElementById("selection-message").textContent =
+        selectedCheckboxes.length === 0
+            ? "Select products to continue."
+            : `${selectedCheckboxes.length} product(s) selected.`;
+
+    const selectAll = document.getElementById("select-all");
+
+    selectAll.checked =
+        checkboxes.length > 0 &&
+        selectedCheckboxes.length === checkboxes.length;
+
+    selectAll.indeterminate =
+        selectedCheckboxes.length > 0 &&
+        selectedCheckboxes.length < checkboxes.length;
+
+}
+
+
+// ======================================
+// SELECT ALL PRODUCTS
+// ======================================
+
+document.getElementById("select-all")?.addEventListener("change", function () {
+
+    document.querySelectorAll(".product-checkbox").forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+
+    updateSelectedTotal();
+
+});
+
+
+// INDIVIDUAL PRODUCT SELECTION
+
+document.querySelectorAll(".product-checkbox").forEach(checkbox => {
+
+    checkbox.addEventListener("change", updateSelectedTotal);
+
+});
+
+
+// ======================================
+// SUBMIT SELECTED PRODUCTS FOR CHECKOUT
+// ======================================
+
+function submitSelectedItems() {
+
+    const selectedCheckboxes = document.querySelectorAll(
+        ".product-checkbox:checked"
+    );
+
+    if (selectedCheckboxes.length === 0) {
+        return;
+    }
+
+    const form = document.createElement("form");
+
+    form.method = "POST";
+    form.action = "{{ url_for('checkout_selected') }}";
+
+    selectedCheckboxes.forEach(checkbox => {
+
+        const input = document.createElement("input");
+
+        input.type = "hidden";
+        input.name = "selected_ids";
+        input.value = checkbox.value;
+
+        form.appendChild(input);
+
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+
+}
+
+
+// INITIAL CALCULATION
+
+updateSelectedTotal();
+
+</script>
+
+{% endblock %}

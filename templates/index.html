@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+
+{% block title %}SmartCart | Discover Better Shopping{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero">
+
+    <div>
+        <span class="hero-badge">
+            <i class="fa-solid fa-sparkles"></i>
+            YOUR PREMIUM SHOPPING DESTINATION
+        </span>
+
+        <p class="eyebrow">WELCOME TO SMARTCART</p>
+
+        <h1>
+            Discover Products.
+            <span style="color:#6366f1;">Love Every Purchase.</span>
+        </h1>
+
+        <p>
+            Explore an amazing collection of products,
+            discover your favourites and enjoy a smarter
+            shopping experience with SmartCart.
+        </p>
+
+        <div class="hero-actions">
+
+            <a href="/user-login" class="button">
+                <i class="fa-solid fa-user"></i>
+                User Login
+            </a>
+
+            <a href="/admin-login" class="button secondary">
+                <i class="fa-solid fa-user-shield"></i>
+                Admin Login
+            </a>
+
+        </div>
+
+        <p style="font-size:13px;margin-top:20px;">
+            New to SmartCart?
+            <a href="/user-register"
+               style="color:#6366f1;font-weight:700;">
+                Create User Account
+            </a>
+        </p>
+
+        <p style="font-size:13px;margin-top:12px;">
+            <i class="fa-solid fa-shield-halved"></i>
+            Simple shopping. Secure experience.
+        </p>
+    </div>
+
+    <div class="hero-art">
+
+        <div class="hero-orbit"></div>
+
+        <img
+            src="https://images.unsplash.com/photo-1607082349566-187342175e2f?w=900&auto=format&fit=crop&q=85"
+            alt="Premium shopping collection"
+            onerror="this.style.display='none';"
+        >
+
+    </div>
+
+</section>
+
+
+<!-- CATEGORY SECTION -->
+<section>
+
+    <div class="section-heading">
+
+        <div>
+            <p class="eyebrow">EXPLORE COLLECTIONS</p>
+            <h2>Shop by Categories</h2>
+            <p>Discover products across different categories.</p>
+        </div>
+
+    </div>
+
+    <div class="category-grid">
+
+        <a href="/user-login" class="category-card">
+            <img
+                src="https://images.unsplash.com/photo-1498049794561-7780e7231661?w=500&q=80"
+                alt="Electronics">
+            <h3>Electronics</h3>
+        </a>
+
+        <a href="/user-login" class="category-card">
+            <img
+                src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500&q=80"
+                alt="Fashion">
+            <h3>Fashion</h3>
+        </a>
+
+        <a href="/user-login" class="category-card">
+            <img
+                src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=500&q=80"
+                alt="Home">
+            <h3>Home & Living</h3>
+        </a>
+
+        <a href="/user-login" class="category-card">
+            <img
+                src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80"
+                alt="Accessories">
+            <h3>Accessories</h3>
+        </a>
+
+        <a href="/user-login" class="category-card">
+            <img
+                src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500&q=80"
+                alt="Beauty">
+            <h3>Beauty</h3>
+        </a>
+
+        <a href="/user-login" class="category-card">
+            <img
+                src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=500&q=80"
+                alt="Sports">
+            <h3>Sports</h3>
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- BENEFITS SECTION -->
+<section>
+
+    <div class="section-heading">
+
+        <div>
+            <p class="eyebrow">THE SMARTCART ADVANTAGE</p>
+            <h2>Why Shop With Us?</h2>
+        </div>
+
+    </div>
+
+    <div class="benefits-grid">
+
+        <div class="benefit-card">
+
+            <div class="benefit-icon">
+                <i class="fa-solid fa-truck-fast"></i>
+            </div>
+
+            <h3>Fast Shopping</h3>
+
+            <p>
+                Enjoy a smooth and convenient shopping experience.
+            </p>
+
+        </div>
+
+        <div class="benefit-card">
+
+            <div class="benefit-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+
+            <h3>Secure Experience</h3>
+
+            <p>
+                Your account and shopping experience matter to us.
+            </p>
+
+        </div>
+
+        <div class="benefit-card">
+
+            <div class="benefit-icon">
+                <i class="fa-solid fa-star"></i>
+            </div>
+
+            <h3>Quality Collection</h3>
+
+            <p>
+                Explore a variety of products in one place.
+            </p>
+
+        </div>
+
+        <div class="benefit-card">
+
+            <div class="benefit-icon">
+                <i class="fa-solid fa-heart"></i>
+            </div>
+
+            <h3>Easy Shopping</h3>
+
+            <p>
+                Find your favourites and manage your cart easily.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ACCOUNT SECTION -->
+<section class="newsletter">
+
+    <p class="eyebrow">START YOUR JOURNEY</p>
+
+    <h2>Ready to Shop Smarter?</h2>
+
+    <p>
+        Join SmartCart and discover a better way
+        to explore your favourite products.
+    </p>
+
+    <div class="hero-actions" style="justify-content:center;">
+
+        <a href="/user-register" class="button">
+            <i class="fa-solid fa-user-plus"></i>
+            Create Your Account
+        </a>
+
+        <a href="/user-login" class="button secondary">
+            <i class="fa-solid fa-user"></i>
+            User Login
+        </a>
+
+        <a href="/admin-login" class="button secondary">
+            <i class="fa-solid fa-user-shield"></i>
+            Admin Login
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

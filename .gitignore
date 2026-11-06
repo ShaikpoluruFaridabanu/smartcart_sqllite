@@ -1,0 +1,36 @@
+.env
+.env.*
+!.env.example
+
+# Local databases and backups
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.sqlite-journal
+*_backup*
+
+# Python generated files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+.virtualenvs/
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Runtime user/admin profile uploads may contain personal images
+static/uploads/user_profiles/*
+!static/uploads/user_profiles/.gitkeep
+static/uploads/admin_profiles/*
+!static/uploads/admin_profiles/.gitkeep

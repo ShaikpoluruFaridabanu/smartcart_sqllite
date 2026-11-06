@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>SmartCart Invoice #{{ order.order_id }}</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #212529;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .invoice-box {
+            width: 90%;
+            margin: auto;
+            border: 1px solid #e0e0e0;
+            padding: 24px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #2874f0;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+        .header h2 {
+            margin: 0 0 6px 0;
+            color: #2874f0;
+            font-size: 24px;
+        }
+        .header p {
+            margin: 3px 0;
+            color: #555;
+            font-size: 13px;
+        }
+        .section-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 4px;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+        .details-table td {
+            padding: 4px 0;
+            border: none;
+            vertical-align: top;
+        }
+        .details-label {
+            width: 120px;
+            font-weight: bold;
+            color: #555;
+        }
+        table.items-table {
+            width: 100%;
+            margin-top: 12px;
+            border-collapse: collapse;
+        }
+        table.items-table th, table.items-table td {
+            border: 1px solid #ddd;
+            padding: 8px 10px;
+            text-align: left;
+        }
+        table.items-table th {
+            background-color: #f7f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .total-box {
+            margin-top: 20px;
+            text-align: right;
+            padding-top: 10px;
+            border-top: 2px solid #2874f0;
+        }
+        .total-box h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #111;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .footer-note {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 11px;
+            color: #888;
+            border-top: 1px dashed #ccc;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="invoice-box">
+    <div class="header">
+        <h2>SmartCart Invoice</h2>
+        <p><strong>Order ID:</strong> #{{ order.order_id }}</p>
+        <p><strong>Order Date:</strong> {{ order.created_at }}</p>
+    </div>
+
+    <div class="section-title">Customer &amp; Delivery Details</div>
+    <table class="details-table">
+        <tr>
+            <td class="details-label">User ID:</td>
+            <td>#{{ order.user_id }}</td>
+        </tr>
+        {% if order.full_name or order.customer_name %}
+        <tr>
+            <td class="details-label">Customer Name:</td>
+            <td>{{ order.full_name or order.customer_name }}</td>
+        </tr>
+        {% endif %}
+        {% if order.phone %}
+        <tr>
+            <td class="details-label">Phone:</td>
+            <td>{{ order.phone }}</td>
+        </tr>
+        {% endif %}
+        {% if order.address_line or order.address %}
+        <tr>
+            <td class="details-label">Delivery Address:</td>
+            <td>
+                {{ order.address_line or order.address }}{% if order.city %}, {{ order.city }}{% endif %}{% if order.state %}, {{ order.state }}{% endif %}{% if order.pincode %} - {{ order.pincode }}{% endif %}
+                {% if order.landmark %}<br>Landmark: {{ order.landmark }}{% endif %}
+            </td>
+        </tr>
+        {% endif %}
+        {% if order.razorpay_payment_id %}
+        <tr>
+            <td class="details-label">Payment ID:</td>
+            <td>{{ order.razorpay_payment_id }} <span class="status-badge">{{ order.payment_status or 'PAID' }}</span></td>
+        </tr>
+        {% endif %}
+    </table>
+
+    <div class="section-title">Purchased Items</div>
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width: 45%;">Product</th>
+                <th class="text-center" style="width: 15%;">Quantity</th>
+                <th class="text-right" style="width: 20%;">Price</th>
+                <th class="text-right" style="width: 20%;">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for it in items %}
+            <tr>
+                <td><strong>{{ it.product_name }}</strong></td>
+                <td class="text-center">{{ it.quantity }}</td>
+                <td class="text-right">Rs. {{ it.price }}</td>
+                <td class="text-right">Rs. {{ it.subtotal if it.subtotal else (it.price * it.quantity) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="total-box">
+        <h3>Grand Total: Rs. {{ order.total_amount if order.total_amount is defined and order.total_amount else (order.amount if order.amount is defined and order.amount else '0.00') }}</h3>
+    </div>
+
+    <div class="footer-note">
+        Thank you for shopping with SmartCart! This is a computer-generated tax invoice.
+    </div>
+</div>
+</body>
+</html>
+

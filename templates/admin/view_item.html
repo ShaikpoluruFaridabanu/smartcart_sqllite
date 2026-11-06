@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} | SmartCart{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">Product details</p><h1>{{ product.name }}</h1><p>Review the information for this product.</p></div><a class="button secondary" href="/admin/item-list">← Back to Products</a></div>
+<section class="panel detail-layout">
+  <div><img class="detail-image" src="{{ url_for('static', filename='uploads/product_images/' ~ product.image) }}" alt="{{ product.name }}"></div>
+  <div class="detail-info"><p class="eyebrow">{{ product.category }}</p><h2>{{ product.name }}</h2><div class="detail-price">₹{{ product.price }}</div><h3>Description</h3><p>{{ product.description }}</p><div class="hero-actions"><a class="button" href="/admin/update-item/{{ product.product_id }}">Edit Product</a><a class="button secondary" href="/admin/item-list">Back to List</a></div></div>
+</section>
+{% endblock %}

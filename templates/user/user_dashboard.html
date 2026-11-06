@@ -1,0 +1,444 @@
+{% extends 'base.html' %}
+
+{% block title %}Shop Products | SmartCart{% endblock %}
+
+{% block content %}
+
+<!-- CUSTOMER HERO -->
+<section class="customer-header">
+
+    <div class="customer-header-content">
+
+        <span class="hero-badge">
+            <i class="fa-solid fa-star"></i>
+            YOUR SHOPPING DESTINATION
+        </span>
+
+        <p class="eyebrow">SMARTCART COLLECTION</p>
+
+        <h1>
+            Welcome, {{ user_name }}!
+            <br>
+            <span style="color:#6366f1;">
+                Find Something Amazing.
+            </span>
+        </h1>
+
+        <p>
+            Explore our latest products, discover your
+            favourites and enjoy shopping with SmartCart.
+        </p>
+
+        <a href="#products" class="button">
+            Explore Products
+            <i class="fa-solid fa-arrow-down"></i>
+        </a>
+
+        <a href="{{ url_for('view_cart') }}" class="cart-link">
+            <i class="fa-solid fa-bag-shopping"></i>
+            My Cart
+            <span id="cart-count">{{ cart_count|default(0) }}</span>
+        </a>
+
+    </div>
+
+    <img
+        class="customer-header-art"
+        src="https://images.unsplash.com/photo-1607082349566-187342175e2f?w=700&q=85"
+        alt="SmartCart shopping collection"
+    >
+
+</section>
+
+
+<!-- CATEGORY SECTION -->
+<section>
+
+    <div class="section-heading">
+
+        <div>
+            <p class="eyebrow">EXPLORE</p>
+            <h2>Shop by Categories</h2>
+            <p>Find exactly what you are looking for.</p>
+        </div>
+
+    </div>
+
+    <div class="category-grid">
+
+        <a href="#products" class="category-card">
+            <img
+                src="https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&q=80"
+                alt="Electronics"
+            >
+            <h3>Electronics</h3>
+        </a>
+
+        <a href="#products" class="category-card">
+            <img
+                src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&q=80"
+                alt="Fashion"
+            >
+            <h3>Fashion</h3>
+        </a>
+
+        <a href="#products" class="category-card">
+            <img
+                src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400&q=80"
+                alt="Home"
+            >
+            <h3>Home & Living</h3>
+        </a>
+
+        <a href="#products" class="category-card">
+            <img
+                src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80"
+                alt="Accessories"
+            >
+            <h3>Accessories</h3>
+        </a>
+
+        <a href="#products" class="category-card">
+            <img
+                src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&q=80"
+                alt="Beauty"
+            >
+            <h3>Beauty</h3>
+        </a>
+
+        <a href="#products" class="category-card">
+            <img
+                src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&q=80"
+                alt="Sports"
+            >
+            <h3>Sports</h3>
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- PRODUCTS SECTION -->
+<section class="customer-products" id="products">
+
+    <div class="products-heading">
+
+        <div>
+            <p class="eyebrow">OUR COLLECTION</p>
+            <h2>Discover Products</h2>
+            <p>Explore our available products.</p>
+        </div>
+
+        <span class="product-count">
+            {{ products|length }} Products
+        </span>
+
+    </div>
+
+
+    {% if products %}
+
+    <div class="customer-product-grid">
+
+        {% for product in products %}
+
+        <article class="customer-product-card">
+
+            <!-- PRODUCT IMAGE -->
+            <div class="customer-product-image">
+
+                {% if product.image %}
+
+                    {% if product.image.startswith('http://') or product.image.startswith('https://') %}
+
+                        <img
+                            src="{{ product.image }}"
+                            alt="{{ product.name }}"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;"
+                        >
+
+                        <div class="no-product-image" hidden>
+                            <i class="fa-regular fa-image"></i>
+                            Image Not Found
+                        </div>
+
+                    {% else %}
+
+                        <img
+                            src="{{ url_for(
+                                'static',
+                                filename='uploads/product_images/' ~ product.image.split('/')[-1]
+                            ) }}"
+                            alt="{{ product.name }}"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;"
+                        >
+
+                        <div class="no-product-image" hidden>
+                            <i class="fa-regular fa-image"></i>
+                            Image Not Found
+                        </div>
+
+                    {% endif %}
+
+                {% else %}
+
+                    <div class="no-product-image">
+                        <i class="fa-regular fa-image"></i>
+                        No Image Available
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- PRODUCT DETAILS -->
+            <div class="customer-product-details">
+
+                <span class="product-category">
+                    {{ product.category or 'General' }}
+                </span>
+
+                <h3>{{ product.name }}</h3>
+
+                <p class="customer-product-description">
+                    {{ product.description or 'No description available.' }}
+                </p>
+
+                <div class="customer-product-price">
+                    ₹{{ "%.2f"|format(product.price or 0) }}
+                </div>
+
+
+                <!-- PRODUCT ACTION BUTTONS -->
+                <div class="customer-product-actions">
+
+                    <!-- VIEW DETAILS -->
+                    <a
+                        href="{{ url_for(
+                            'user_view_product',
+                            product_id=product.product_id
+                        ) }}"
+                        class="product-view-btn"
+                    >
+                        <i class="fa-solid fa-eye"></i>
+                        View
+                    </a>
+
+
+                    <!-- ADD TO CART -->
+                    <button
+                        type="button"
+                        class="add-cart-btn"
+                        data-product-id="{{ product.product_id }}"
+                        onclick="addToCart(this, false)"
+                    >
+                        <i class="fa-solid fa-cart-plus"></i>
+                        Add
+                    </button>
+
+
+                    <!-- BUY NOW -->
+                    <button
+                        type="button"
+                        class="buy-now-btn"
+                        data-product-id="{{ product.product_id }}"
+                        onclick="addToCart(this, true)"
+                    >
+                        <i class="fa-solid fa-bolt"></i>
+                        Buy Now
+                    </button>
+
+                </div>
+
+            </div>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+
+    {% else %}
+
+    <!-- EMPTY PRODUCTS -->
+    <div class="empty-products">
+
+        <i
+            class="fa-solid fa-box-open"
+            style="font-size:40px;color:#6366f1;"
+        ></i>
+
+        <h3>No Products Available</h3>
+
+        <p>
+            Products will appear here once an admin adds them.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- BENEFITS SECTION -->
+<section>
+
+    <div class="section-heading">
+
+        <div>
+            <p class="eyebrow">SMARTCART BENEFITS</p>
+            <h2>A Better Shopping Experience</h2>
+        </div>
+
+    </div>
+
+    <div class="benefits-grid">
+
+        <div class="benefit-card">
+
+            <div class="benefit-icon">
+                <i class="fa-solid fa-truck-fast"></i>
+            </div>
+
+            <h3>Easy Shopping</h3>
+
+            <p>
+                Explore products conveniently.
+            </p>
+
+        </div>
+
+
+        <div class="benefit-card">
+
+            <div class="benefit-icon">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+
+            <h3>Secure Account</h3>
+
+            <p>
+                Enjoy a secure account experience.
+            </p>
+
+        </div>
+
+
+        <div class="benefit-card">
+
+            <div class="benefit-icon">
+                <i class="fa-solid fa-box"></i>
+            </div>
+
+            <h3>Product Variety</h3>
+
+            <p>
+                Discover different product categories.
+            </p>
+
+        </div>
+
+
+        <div class="benefit-card">
+
+            <div class="benefit-icon">
+                <i class="fa-solid fa-cart-shopping"></i>
+            </div>
+
+            <h3>Easy Cart</h3>
+
+            <p>
+                Manage your selected products easily.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+<!-- JAVASCRIPT -->
+{% block scripts %}
+
+<script>
+
+async function addToCart(button, buyNow = false) {
+
+    const productId = button.dataset.productId;
+    const originalContent = button.innerHTML;
+
+    try {
+        button.disabled = true;
+        button.innerHTML = buyNow
+            ? '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'
+            : '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
+
+        // Add the product to the cart first.
+        const response = await fetch(`/user/add-to-cart-ajax/${productId}`, {
+            method: "POST"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            alert(data.message || "Unable to add product!");
+
+            if (response.status === 401) {
+                window.location.href = "/user-login";
+            }
+            return;
+        }
+
+        // Update the cart count in the navigation bar.
+        const cartCount = document.getElementById("cart-count");
+        if (cartCount) {
+            cartCount.innerText = data.cart_count;
+        }
+
+        // Buy Now: select only this product and submit to checkout.
+        if (buyNow) {
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = "/user/checkout-selected";
+
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "selected_ids";
+            input.value = productId;
+
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+            return;
+        }
+
+        // Add to Cart: stay on the dashboard.
+        button.innerHTML = '<i class="fa-solid fa-check"></i> Added';
+
+        setTimeout(function () {
+            button.innerHTML = originalContent;
+        }, 1500);
+
+    } catch (error) {
+        console.error("Cart Error:", error);
+        alert("Something went wrong. Please try again.");
+
+    } finally {
+        button.disabled = false;
+
+        if (button.innerText.includes("Processing") || button.innerText.includes("Adding")) {
+            button.innerHTML = originalContent;
+        }
+    }
+}
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Verify OTP | SmartCart{% endblock %}
+{% block content %}
+<div class="auth-wrap"><section class="auth-card">
+  <p class="eyebrow">Account recovery</p><h2>Verify OTP</h2><p class="muted">Enter the 6-digit code sent to your registered email. The code expires in 5 minutes.</p>
+  <form method="POST">
+    <div class="form-group"><label>6-digit OTP</label><input type="text" name="otp" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required></div>
+    <button type="submit" style="width:100%">Verify OTP</button>
+  </form>
+  <div class="auth-links"><a href="/admin/forgot">Request another OTP</a></div>
+</section></div>
+{% endblock %}

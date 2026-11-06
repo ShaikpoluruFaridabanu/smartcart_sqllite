@@ -1,0 +1,77 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Admin Profile | SmartCart{% endblock %}
+
+{% block content %}
+
+<div class="user-profile-page">
+
+    <div class="page-heading">
+        <div>
+            <p class="eyebrow">Account Settings</p>
+            <h1>Admin Profile</h1>
+            <p>Manage your personal account information.</p>
+        </div>
+
+        <a href="{{ url_for('admin_dashboard') }}" class="button secondary">
+            ← Dashboard
+        </a>
+    </div>
+
+    <div class="user-profile-card">
+
+        <!-- Profile Header -->
+        <div class="user-profile-header">
+
+            {% if admin.profile_image %}
+                <img
+                    class="user-profile-avatar admin-avatar"
+                    src="{{ url_for('static', filename='uploads/admin_profiles/' ~ admin.profile_image) }}"
+                    alt="Admin Profile"
+                >
+            {% else %}
+                <div class="user-profile-avatar admin-avatar">
+                    {{ admin.name[0]|upper }}
+                </div>
+            {% endif %}
+
+            <div>
+                <h2>{{ admin.name }}</h2>
+                <p>{{ admin.email }}</p>
+                <span class="profile-role">Administrator</span>
+            </div>
+
+        </div>
+
+        <div class="user-profile-details">
+
+            <div class="profile-field">
+                <span>Admin ID</span>
+                <strong>{{ admin.admin_id }}</strong>
+            </div>
+
+            <div class="profile-field">
+                <span>Full Name</span>
+                <strong>{{ admin.name }}</strong>
+            </div>
+
+            <div class="profile-field">
+                <span>Email Address</span>
+                <strong>{{ admin.email }}</strong>
+            </div>
+
+        </div>
+
+        <!-- Edit Profile Button -->
+        <div class="profile-actions">
+            <a href="{{ url_for('admin_edit_profile') }}" class="btn-primary">
+                Edit Profile
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

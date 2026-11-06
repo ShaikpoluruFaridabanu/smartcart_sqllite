@@ -1,0 +1,440 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment | SmartCart{% endblock %}
+
+{% block content %}
+
+<div class="checkout-container">
+
+    <h1 class="checkout-title">Complete Your Order</h1>
+
+    <div class="checkout-layout">
+
+        <!-- LEFT: ORDER SUMMARY -->
+        <div class="order-section">
+
+            <div class="checkout-card">
+
+                <h2>Order Summary</h2>
+
+                {% for pid, item in selected_items.items() %}
+
+                <div class="product-item">
+
+                    <!-- PRODUCT IMAGE -->
+                    {% if item.image %}
+
+                        {% if item.image.startswith('http://') or item.image.startswith('https://') %}
+
+                            <img src="{{ item.image }}"
+                                 class="product-image"
+                                 alt="{{ item.name }}"
+                                 onerror="this.src='https://placehold.co/200x200/f0efff/6366f1?text=SmartCart';">
+
+                        {% else %}
+
+                            <img src="{{ url_for('static', filename='uploads/product_images/' ~ item.image.split('/')[-1]) }}"
+                                 class="product-image"
+                                 alt="{{ item.name }}"
+                                 onerror="this.src='https://placehold.co/200x200/f0efff/6366f1?text=SmartCart';">
+
+                        {% endif %}
+
+                    {% else %}
+
+                        <img src="https://placehold.co/200x200/f0efff/6366f1?text=SmartCart"
+                             class="product-image"
+                             alt="Product image unavailable">
+
+                    {% endif %}
+
+
+                    <!-- PRODUCT DETAILS -->
+                    <div class="product-details">
+
+                        <h3>{{ item.name }}</h3>
+
+                        <p>Quantity: {{ item.quantity }}</p>
+
+                        <p class="product-price">
+                            ₹{{ "%.2f"|format(item.price|float) }}
+                        </p>
+
+                        <p>
+                            Subtotal:
+                            ₹{{ "%.2f"|format(item.price|float * item.quantity|int) }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+
+                <!-- TOTAL AMOUNT -->
+                <div class="price-details">
+
+                    <span>Total Amount</span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(total_amount|float) }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT: ADDRESS AND PAYMENT -->
+        <div class="payment-section">
+
+
+            <!-- DELIVERY ADDRESS -->
+            <div class="checkout-card">
+
+                <div class="card-heading">
+
+                    <h2>Delivery Address</h2>
+
+                    <button type="button"
+                            class="edit-btn"
+                            id="edit-address-btn"
+                            onclick="showAddressForm()">
+
+                        Edit Address
+
+                    </button>
+
+                </div>
+
+
+                <!-- ADDRESS DISPLAY -->
+                <div id="address-display">
+
+                    {% if delivery_address %}
+
+                        <h3>{{ delivery_address.full_name }}</h3>
+
+                        <p>{{ delivery_address.phone }}</p>
+
+                        <p>{{ delivery_address.address_line }}</p>
+
+                        <p>
+                            {{ delivery_address.city }},
+                            {{ delivery_address.state }} -
+                            {{ delivery_address.pincode }}
+                        </p>
+
+                        {% if delivery_address.landmark %}
+
+                            <p>
+                                Landmark: {{ delivery_address.landmark }}
+                            </p>
+
+                        {% endif %}
+
+                    {% else %}
+
+                        <p>No delivery address found.</p>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- EDIT ADDRESS FORM -->
+                <form id="address-form"
+                      action="{{ url_for('save_delivery_address') }}"
+                      method="POST"
+                      style="display:none;">
+
+                    <input type="text"
+                           name="full_name"
+                           placeholder="Full Name"
+                           value="{{ delivery_address.full_name if delivery_address else '' }}"
+                           required>
+
+                    <input type="tel"
+                           name="phone"
+                           placeholder="Phone Number"
+                           value="{{ delivery_address.phone if delivery_address else '' }}"
+                           required>
+
+                    <textarea name="address_line"
+                              placeholder="House No, Street, Area"
+                              required>{{ delivery_address.address_line if delivery_address else '' }}</textarea>
+
+                    <input type="text"
+                           name="city"
+                           placeholder="City"
+                           value="{{ delivery_address.city if delivery_address else '' }}"
+                           required>
+
+                    <input type="text"
+                           name="state"
+                           placeholder="State"
+                           value="{{ delivery_address.state if delivery_address else '' }}"
+                           required>
+
+                    <input type="text"
+                           name="pincode"
+                           placeholder="Pincode"
+                           value="{{ delivery_address.pincode if delivery_address else '' }}"
+                           required>
+
+                    <input type="text"
+                           name="landmark"
+                           placeholder="Landmark (Optional)"
+                           value="{{ delivery_address.landmark if delivery_address else '' }}">
+
+                    <div class="address-actions">
+
+                        <button type="submit" class="save-btn">
+                            Save Address
+                        </button>
+
+                        <button type="button"
+                                class="cancel-btn"
+                                onclick="hideAddressForm()">
+
+                            Cancel
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- PAYMENT CARD -->
+            <div class="checkout-card">
+
+                <div class="payment-total">
+
+                    <span>Amount to Pay</span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(total_amount|float) }}
+                    </strong>
+
+                </div>
+
+
+                <!-- RAZORPAY BUTTON -->
+                <button type="button"
+                        id="rzp-button"
+                        class="pay-btn"
+
+                        data-key="{{ razorpay_key_id }}"
+                        data-amount="{{ razorpay_amount }}"
+                        data-order-id="{{ razorpay_order_id }}"
+                        data-success-url="/verify-payment"
+
+                        onclick="openRazorpay()">
+
+                    Pay Now ₹{{ "%.2f"|format(total_amount|float) }}
+
+                </button>
+
+
+                <p class="secure-payment">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    Secure payment powered by Razorpay
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- RAZORPAY CHECKOUT SCRIPT -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
+<script>
+
+// ====================================
+// EDIT DELIVERY ADDRESS
+// ====================================
+
+function showAddressForm() {
+
+    document.getElementById("address-display").style.display = "none";
+
+    document.getElementById("address-form").style.display = "block";
+
+    document.getElementById("edit-address-btn").style.display = "none";
+
+}
+
+
+// ====================================
+// CANCEL ADDRESS EDIT
+// ====================================
+
+function hideAddressForm() {
+
+    document.getElementById("address-form").style.display = "none";
+
+    document.getElementById("address-display").style.display = "block";
+
+    document.getElementById("edit-address-btn").style.display = "inline-block";
+
+}
+
+
+// ====================================
+// OPEN RAZORPAY PAYMENT
+// ====================================
+
+function openRazorpay() {
+
+    const button = document.getElementById("rzp-button");
+
+    // Avoid opening multiple checkout windows.
+    if (button.disabled) return;
+
+    // Get Razorpay details from HTML attributes
+    const keyId = button.dataset.key;
+
+    const amount = Number(button.dataset.amount);
+
+    const orderId = button.dataset.orderId;
+
+    const successUrl = button.dataset.successUrl;
+
+
+    // Validate payment details
+    if (!keyId || !amount || !orderId || !successUrl) {
+
+        alert("Payment details are missing. Please refresh the page.");
+
+        return;
+
+    }
+
+
+    if (typeof window.Razorpay === "undefined") {
+        alert("Razorpay checkout could not be loaded. Check your internet connection and refresh the page.");
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Opening secure payment...";
+
+    // Razorpay options
+    const options = {
+
+        key: keyId,
+
+        amount: amount,
+
+        currency: "INR",
+
+        name: "SmartCart",
+
+        description: "Order Payment",
+
+        order_id: orderId,
+
+
+        // PAYMENT SUCCESS HANDLER
+        handler: function(response) {
+
+            const form = document.createElement("form");
+
+            form.method = "POST";
+
+            form.action = successUrl;
+
+
+            const fields = {
+
+                razorpay_payment_id: response.razorpay_payment_id,
+
+                razorpay_order_id: response.razorpay_order_id,
+
+                razorpay_signature: response.razorpay_signature
+
+            };
+
+
+            // Add payment details to form
+            for (const key in fields) {
+
+                const input = document.createElement("input");
+
+                input.type = "hidden";
+
+                input.name = key;
+
+                input.value = fields[key];
+
+                form.appendChild(input);
+
+            }
+
+
+            document.body.appendChild(form);
+
+            form.submit();
+
+        },
+
+
+        // PAYMENT THEME
+        theme: {
+            color: "#0f766e"
+        },
+        modal: {
+            ondismiss: function () {
+                button.disabled = false;
+                button.textContent = "Pay Now ₹{{ "%.2f"|format(total_amount|float) }}";
+            }
+        }
+
+    };
+
+
+    // Create Razorpay instance
+    let razorpay;
+    try {
+        razorpay = new Razorpay(options);
+    } catch (error) {
+        console.error("Razorpay initialization error:", error);
+        button.disabled = false;
+        button.textContent = "Pay Now ₹{{ "%.2f"|format(total_amount|float) }}";
+        alert("Unable to start payment. Please refresh and try again.");
+        return;
+    }
+
+    // PAYMENT FAILURE HANDLER
+    razorpay.on("payment.failed", function(response) {
+        button.disabled = false;
+        button.textContent = "Pay Now ₹{{ "%.2f"|format(total_amount|float) }}";
+        const description = response && response.error && response.error.description
+            ? response.error.description : "Please try again.";
+        alert("Payment failed: " + description);
+    });
+
+
+    // OPEN RAZORPAY CHECKOUT
+    razorpay.open();
+
+}
+
+</script>
+
+{% endblock %}

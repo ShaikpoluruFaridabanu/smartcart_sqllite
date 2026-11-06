@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}SmartCart | Shop Smarter{% endblock %}</title>
+
+    <meta name="theme-color" content="#6366f1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    {% block head %}{% endblock %}
+
+</head>
+
+
+<body>
+
+
+<!-- HEADER -->
+<header class="site-header">
+
+    <div class="nav-wrap">
+
+        <!-- LOGO -->
+        <a class="brand" href="/">
+
+            <span class="brand-mark">S</span>
+
+            <span>
+                Smart<span class="brand-accent">Cart</span>
+            </span>
+
+        </a>
+
+
+        <!-- MOBILE MENU BUTTON -->
+        <button class="nav-toggle"
+                type="button"
+                aria-label="Toggle navigation"
+                aria-expanded="false"
+                onclick="
+                    const nav = document.querySelector('.nav-links');
+                    nav.classList.toggle('open');
+                    this.setAttribute(
+                        'aria-expanded',
+                        nav.classList.contains('open')
+                    );
+                ">
+
+            <i class="fa-solid fa-bars"></i>
+
+        </button>
+
+
+        <!-- NAVIGATION -->
+        <nav class="nav-links">
+
+
+            <!-- ADMIN NAVIGATION -->
+            {% if session.get('admin_id') %}
+
+                <a href="/admin-dashboard">
+                    Dashboard
+                </a>
+
+                <a href="/admin/item-list">
+                    Products
+                </a>
+
+                <a href="/admin/add-item">
+                    Add Product
+                </a>
+
+                <a href="/admin/profile">
+                    Profile
+                </a>
+
+                <a class="nav-cta" href="/admin-logout">
+                    Logout
+                </a>
+
+
+            <!-- USER NAVIGATION -->
+            {% elif session.get('user_id') %}
+
+                <a href="/user-dashboard">
+                    <i class="fa-solid fa-house"></i>
+                    Home
+                </a>
+
+                <a href="/user-dashboard">
+                    <i class="fa-solid fa-store"></i>
+                    Shop
+                </a>
+
+                <a href="/user-profile">
+                    <i class="fa-solid fa-user"></i>
+                    My Profile
+                </a>
+
+                <!-- MY ORDERS -->
+                <a href="{{ url_for('my_orders') }}">
+                    <i class="fa-solid fa-box"></i>
+                    My Orders
+                </a>
+
+                <!-- CART -->
+                <a href="{{ url_for('view_cart') }}">
+
+                    <i class="fa-solid fa-bag-shopping"></i>
+
+                    Cart
+
+                    {% if cart_count is defined %}
+
+                        <span id="cart-count">
+                            {{ cart_count }}
+                        </span>
+
+                    {% endif %}
+
+                </a>
+
+                <a class="nav-cta" href="/user-logout">
+                    Logout
+                </a>
+
+
+            <!-- GUEST NAVIGATION -->
+            {% else %}
+
+                <a href="/">
+                    Home
+                </a>
+
+                <a href="/admin-login">
+                    Admin Login
+                </a>
+
+                <a href="/user-login">
+                    User Login
+                </a>
+
+                <a class="nav-cta" href="/user-register">
+                    Get Started
+                </a>
+
+            {% endif %}
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+
+<!-- MAIN CONTENT -->
+<main class="page-shell">
+
+
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            <div class="flash-stack">
+
+                {% for category, message in messages %}
+
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- PAGE CONTENT -->
+    {% block content %}{% endblock %}
+
+
+</main>
+
+
+
+<!-- FOOTER -->
+<footer class="site-footer">
+
+    <div class="footer-inner">
+
+        <div class="footer-grid">
+
+
+            <!-- BRAND -->
+            <div>
+
+                <a class="brand" href="/" style="color:white;">
+
+                    <span class="brand-mark">S</span>
+
+                    <span>
+                        Smart<span class="brand-accent">Cart</span>
+                    </span>
+
+                </a>
+
+                <p>
+                    Discover products you'll love.
+                    Shop smarter, live better with SmartCart.
+                </p>
+
+                <div class="footer-links">
+
+                    <a href="#">
+                        <i class="fa-brands fa-instagram"></i>
+                        Instagram
+                    </a>
+
+                    <a href="#">
+                        <i class="fa-brands fa-facebook"></i>
+                        Facebook
+                    </a>
+
+                    <a href="#">
+                        <i class="fa-brands fa-x-twitter"></i>
+                        Twitter
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- EXPLORE -->
+            <div>
+
+                <h3>Explore</h3>
+
+                <div class="footer-links">
+
+                    <a href="/">Home</a>
+
+                    <a href="/user-dashboard">
+                        Shop Products
+                    </a>
+
+                    <a href="/user-register">
+                        Create Account
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- MY ACCOUNT -->
+            <div>
+
+                <h3>My Account</h3>
+
+                <div class="footer-links">
+
+                    <a href="/user-login">
+                        Login
+                    </a>
+
+                    <a href="/user-register">
+                        Register
+                    </a>
+
+                    <a href="/user-profile">
+                        My Profile
+                    </a>
+
+                    {% if session.get('user_id') %}
+
+                        <a href="{{ url_for('my_orders') }}">
+                            My Orders
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- SUPPORT -->
+            <div>
+
+                <h3>Support</h3>
+
+                <div class="footer-links">
+
+                    <a href="#">
+                        Help Center
+                    </a>
+
+                    <a href="#">
+                        Privacy Policy
+                    </a>
+
+                    <a href="#">
+                        Terms & Conditions
+                    </a>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- FOOTER BOTTOM -->
+        <div class="footer-bottom">
+
+            <span>
+                © 2026 SmartCart. All rights reserved.
+            </span>
+
+            <span>
+                Designed for smarter shopping.
+            </span>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+
+<!-- AUTO-DISMISS FLASH MESSAGES -->
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const flashMessages = document.querySelectorAll(".flash-message");
+
+    flashMessages.forEach(function (message) {
+
+        setTimeout(function () {
+
+            message.style.transition =
+                "opacity 0.5s ease, transform 0.5s ease";
+
+            message.style.opacity = "0";
+
+            message.style.transform = "translateY(-10px)";
+
+            setTimeout(function () {
+
+                message.remove();
+
+            }, 500);
+
+        }, 3000);
+
+    });
+
+});
+
+</script>
+
+
+{% block scripts %}{% endblock %}
+
+
+</body>
+
+</html>
+```

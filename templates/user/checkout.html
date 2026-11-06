@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout | SmartCart{% endblock %}
+
+{% block content %}
+
+<section class="checkout-page">
+
+    <!-- CHECKOUT HEADER -->
+    <div class="section-heading checkout-heading">
+        <div>
+            <p class="eyebrow">SMARTCART CHECKOUT</p>
+            <h1>Complete Your Order</h1>
+            <p>Enter your delivery details and review your order.</p>
+        </div>
+
+        <a href="{{ url_for('view_cart') }}" class="button secondary">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Cart
+        </a>
+    </div>
+
+    <div class="checkout-layout">
+
+        <!-- LEFT: DELIVERY ADDRESS -->
+        <div class="checkout-left">
+
+            <div class="checkout-card">
+
+                <div class="checkout-card-heading">
+                    <div class="checkout-icon">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+
+                    <div>
+                        <h2>Delivery Address</h2>
+                        <p>Where should we deliver your products?</p>
+                    </div>
+                </div>
+
+                <form method="POST"
+                      action="{{ url_for('save_delivery_address') }}"
+                      class="address-form">
+
+                    <div class="address-field">
+                        <label for="full_name">Full Name *</label>
+                        <input
+                            type="text"
+                            id="full_name"
+                            name="full_name"
+                            placeholder="Enter your full name"
+                            value="{{ saved_address.get('full_name', '') }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="address-field">
+                        <label for="phone">Mobile Number *</label>
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            placeholder="10-digit mobile number"
+                            pattern="[0-9]{10}"
+                            maxlength="10"
+                            value="{{ saved_address.get('phone', '') }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="address-field">
+                        <label for="address_line">House No. / Street Address *</label>
+                        <textarea
+                            id="address_line"
+                            name="address_line"
+                            rows="3"
+                            placeholder="Enter house number, street and area"
+                            required
+                        >{{ saved_address.get('address_line', '') }}</textarea>
+                    </div>
+
+                    <div class="address-row">
+
+                        <div class="address-field">
+                            <label for="city">City *</label>
+                            <input
+                                type="text"
+                                id="city"
+                                name="city"
+                                placeholder="Enter city"
+                                value="{{ saved_address.get('city', '') }}"
+                                required
+                            >
+                        </div>
+
+                        <div class="address-field">
+                            <label for="state">State *</label>
+                            <input
+                                type="text"
+                                id="state"
+                                name="state"
+                                placeholder="Enter state"
+                                value="{{ saved_address.get('state', '') }}"
+                                required
+                            >
+                        </div>
+
+                    </div>
+
+                    <div class="address-row">
+
+                        <div class="address-field">
+                            <label for="pincode">Pincode *</label>
+                            <input
+                                type="text"
+                                id="pincode"
+                                name="pincode"
+                                placeholder="6-digit pincode"
+                                pattern="[0-9]{6}"
+                                maxlength="6"
+                                value="{{ saved_address.get('pincode', '') }}"
+                                required
+                            >
+                        </div>
+
+                        <div class="address-field">
+                            <label for="landmark">Landmark</label>
+                            <input
+                                type="text"
+                                id="landmark"
+                                name="landmark"
+                                placeholder="Nearby landmark"
+                                value="{{ saved_address.get('landmark', '') }}"
+                            >
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="button save-address-btn">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Save Delivery Address
+                    </button>
+
+                </form>
+
+                {% if saved_address %}
+
+                <div class="address-saved-message">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Your delivery address is saved in this session.
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT: ORDER SUMMARY -->
+        <aside class="checkout-summary">
+
+            <div class="checkout-card">
+
+                <div class="checkout-card-heading">
+                    <div class="checkout-icon">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                    </div>
+
+                    <div>
+                        <h2>Order Summary</h2>
+                        <p>Your selected products</p>
+                    </div>
+                </div>
+
+                <div class="checkout-summary-row">
+                    <span>Selected Products</span>
+                    <strong>{{ selected_items|length }}</strong>
+                </div>
+
+                <div class="checkout-summary-row">
+                    <span>Total Items</span>
+                    <strong>{{ selected_count }}</strong>
+                </div>
+
+                <div class="checkout-summary-row">
+                    <span>Delivery</span>
+                    <strong>Calculated at checkout</strong>
+                </div>
+
+                <div class="checkout-divider"></div>
+
+                <div class="checkout-total">
+                    <span>Total Amount</span>
+                    <strong>
+                        ₹{{ "%.2f"|format(selected_total) }}
+                    </strong>
+                </div>
+
+                <div class="checkout-info">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Secure shopping experience
+                </div>
+
+                <a href="{{ url_for('view_cart') }}"
+                   class="button secondary checkout-back-btn">
+                    <i class="fa-solid fa-pen"></i>
+                    Modify Cart
+                </a>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+</section>
+
+{% endblock %}

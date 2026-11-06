@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}My Profile | SmartCart{% endblock %}
+
+{% block content %}
+
+<section class="user-profile-page">
+  <a href="{{ url_for('user_dashboard') }}" class="back-link">
+    &larr; Back to Dashboard
+  </a>
+
+  <div class="user-profile-card">
+    <div class="user-profile-header">
+      {% if user.profile_image %}
+        <img
+          class="user-profile-avatar"
+          src="{{ url_for('static', filename='uploads/user_profiles/' ~ user.profile_image) }}"
+          alt="{{ user.name }}"
+          style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #2874f0;"
+        >
+      {% else %}
+        <div class="user-profile-avatar">{{ user.name[0]|upper if user.name else 'U' }}</div>
+      {% endif %}
+
+      <div>
+        <p class="eyebrow">SMARTCART CUSTOMER</p>
+        <h1>{{ user.name }}</h1>
+        <p>Your account information</p>
+      </div>
+    </div>
+
+    <div class="user-profile-details">
+      <div class="profile-field">
+        <span>Customer ID</span>
+        <strong>#{{ user.user_id }}</strong>
+      </div>
+
+      <div class="profile-field">
+        <span>Full Name</span>
+        <strong>{{ user.name }}</strong>
+      </div>
+
+      <div class="profile-field">
+        <span>Email Address</span>
+        <strong>{{ user.email }}</strong>
+      </div>
+
+      <div class="profile-field">
+        <span>Phone Number</span>
+        <strong>{{ user.phone or 'Not provided' }}</strong>
+      </div>
+
+      <div class="profile-field">
+        <span>Account Created</span>
+        <strong>
+          {{ user.created_at.strftime('%d %B %Y') if user.created_at and user.created_at.strftime is defined else (user.created_at if user.created_at else 'Not available') }}
+        </strong>
+      </div>
+    </div>
+
+    <div class="profile-actions">
+      <a href="{{ url_for('user_dashboard') }}" class="button">
+        Continue Shopping
+      </a>
+      <a href="{{ url_for('user_edit_profile') }}" class="btn-primary">
+        Edit Profile
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
