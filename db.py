@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS products (
     price REAL,
     image TEXT,
     admin_id INTEGER,
-    FOREIGN KEY (admin_id) REFERENCES admin (admin_id) ON DELETE SET NULL
+    FOREIGN KEY (admin_id) REFERENCES admin (admin_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS orders (
@@ -80,12 +80,30 @@ CREATE TABLE IF NOT EXISTS order_items (
 
 
 def init_db():
-    """Ensure all required SQLite tables exist."""
+    """Ensure all required SQLite tables and foreign key relationships exist."""
     db_directory = os.path.dirname(os.path.abspath(DB_PATH))
     os.makedirs(db_directory, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.execute("PRAGMA foreign_keys = ON")
     conn.executescript(SCHEMA_SQL)
+
+    cursor = conn.cursor()
+
+    # Ensure admin_id column exists on products table
+    cursor.execute("PRAGMA table_info(products)")
+    columns = [col[1] for col in cursor.fetchall()]
+    if columns and 'admin_id' not in columns:
+        cursor.execute("ALTER TABLE products ADD COLUMN admin_id INTEGER REFERENCES admin (admin_id) ON DELETE CASCADE")
+
+    # If any products have NULL admin_id, associate them with the first admin if one exists
+    cursor.execute("SELECT admin_id FROM admin ORDER BY admin_id ASC LIMIT 1")
+    first_admin = cursor.fetchone()
+    if first_admin:
+        cursor.execute("UPDATE products SET admin_id = ? WHERE admin_id IS NULL", (first_admin[0],))
+
+    # Create index on products.admin_id for high-performance filtering
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_products_admin_id ON products (admin_id)")
+
     conn.commit()
     conn.close()
 

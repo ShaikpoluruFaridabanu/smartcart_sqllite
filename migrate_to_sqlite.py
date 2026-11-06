@@ -34,7 +34,7 @@ def create_sqlite_schema(sqlite_conn):
         price REAL,
         image TEXT,
         admin_id INTEGER,
-        FOREIGN KEY (admin_id) REFERENCES admin (admin_id) ON DELETE SET NULL
+        FOREIGN KEY (admin_id) REFERENCES admin (admin_id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS orders (

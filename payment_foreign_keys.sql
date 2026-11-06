@@ -18,6 +18,14 @@ ALTER TABLE order_items
   FOREIGN KEY (product_id) REFERENCES products(product_id)
   ON UPDATE CASCADE ON DELETE RESTRICT;
 
+-- Foreign key relationship between products and admin:
+-- Ensures each product is linked to the admin who created it.
+-- If products.admin_id and admin.admin_id match, run:
+ALTER TABLE products
+  ADD CONSTRAINT fk_products_admin
+  FOREIGN KEY (admin_id) REFERENCES admin(admin_id)
+  ON UPDATE CASCADE ON DELETE CASCADE;
+
 -- ON DELETE RESTRICT protects historical orders from being orphaned when a
 -- customer account or product is deleted. Keep product_name/price/image as
 -- snapshots in order_items so past purchases remain readable.
